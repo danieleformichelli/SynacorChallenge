@@ -82,6 +82,7 @@ in: 20 a
 noop: 21
   no operation
  */
+@ExperimentalUnsignedTypes
 fun main(args: Array<String>) {
     SynacorVirtualMachine().run(Paths.get(ClassLoader.getSystemResource("challenge.bin").file.substring(1)))
 }
