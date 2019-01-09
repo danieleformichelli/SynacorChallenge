@@ -11,6 +11,7 @@ class SynacorVirtualMachine {
         var instructionPointer = 0
         while (instructionPointer != -1) {
             val opCode = OpCode.fromCode(memory.get(instructionPointer))
+            System.err.println("$instructionPointer: ${opCode.toString(memory, instructionPointer)}")
             instructionPointer = opCode.execute(memory, instructionPointer)
         }
     }

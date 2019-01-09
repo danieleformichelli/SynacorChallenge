@@ -8,12 +8,11 @@ import java.util.*
 
 @ExperimentalUnsignedTypes
 class SynacorVirtualMachineMemory {
-    private val memory = ByteBuffer.allocate(1.shl(16)).order(ByteOrder.LITTLE_ENDIAN)
+    private val memory = ByteBuffer.allocate((1.shl(15) + 8) * Short.SIZE_BYTES).order(ByteOrder.LITTLE_ENDIAN)
     private val stack = Stack<Short>()
 
     fun loadProgram(binaryFilePath: Path) {
-        val programBytes = Files.readAllBytes(binaryFilePath)
-        memory.put(programBytes)
+        memory.put(Files.readAllBytes(binaryFilePath))
     }
 
     fun set(address: Number, value: Number) {
@@ -40,9 +39,21 @@ class SynacorVirtualMachineMemory {
         set(address.toShort(), value.toShort())
     }
 
-    fun get(address: Number) = memory.getShort(logicalToPhysicalAddress(address)).toUShort()
+    fun getAddress(address: Number) = memory.getShort(logicalToPhysicalAddress(address)).toUShort().toInt()
+
+    fun get(address: Number): UShort {
+        val valueFromMemory = memory.getShort(logicalToPhysicalAddress(address)).toUShort()
+        return if (valueFromMemory < OpCode.Modulo.toUShort()) {
+            // numbers 0..32767 mean a literal value
+            valueFromMemory
+        } else {
+            // numbers 32768..32775 instead mean registers 0..7
+            memory.getShort(logicalToPhysicalAddress(valueFromMemory)).toUShort()
+        }
+    }
 
     private fun logicalToPhysicalAddress(address: Number) = address.toInt() * Short.SIZE_BYTES
+    private fun logicalToPhysicalAddress(address: UShort) = logicalToPhysicalAddress(address.toInt())
 
     fun push(value: Number) {
         stack.push(value.toShort())
