@@ -109,7 +109,7 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
             }
             // wmem: 16 a b -> write the value from <b> into memory at address <a>
             WMEM -> {
-                memory.set(memory.getAddress(instructionPointer + 1), memory.get(instructionPointer + 2))
+                memory.set(memory.get(memory.getAddress(instructionPointer + 1)), memory.get(instructionPointer + 2))
             }
             // call: 17 a -> write the address of the next instruction to the stack and jump to <a>
             CALL -> {
@@ -130,7 +130,7 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
             }
             // in: 20 a -> read a character from the terminal and write its ascii code to <a>; it can be assumed that once input starts, it will continue until a newline is encountered; this means that you can safely read whole lines from the keyboard and trust that they will be fully read
             IN -> {
-                memory.set(memory.getAddress(instructionPointer + 1).toInt(), nextChar().toShort())
+                memory.set(memory.getAddress(instructionPointer + 1), nextChar().toShort())
             }
             // noop: 21 -> no operation
             NOOP -> {
