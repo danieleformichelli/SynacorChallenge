@@ -10,9 +10,12 @@ import java.util.*
 class SynacorVirtualMachineMemory {
     private val memory = ByteBuffer.allocate((1.shl(15) + 8) * Short.SIZE_BYTES).order(ByteOrder.LITTLE_ENDIAN)
     private val stack = Stack<Short>()
+    var programSize = -1
 
     fun loadProgram(binaryFilePath: Path) {
-        memory.put(Files.readAllBytes(binaryFilePath))
+        val programBytes = Files.readAllBytes(binaryFilePath)
+        programSize = programBytes.size / Short.SIZE_BYTES
+        memory.put(programBytes)
     }
 
     fun set(address: Number, value: Number) {

@@ -3,7 +3,7 @@ package com.formichelli.synacorchallenge
 import java.util.*
 
 @ExperimentalUnsignedTypes
-enum class OpCode(val code: Number, private val parametersCount: Int) {
+enum class OpCode(val code: Number, val parametersCount: Int) {
     HALT(0, 0),
     SET(1, 2),
     PUSH(2, 1),

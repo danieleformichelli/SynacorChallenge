@@ -84,5 +84,11 @@ noop: 21
  */
 @ExperimentalUnsignedTypes
 fun main(args: Array<String>) {
-    SynacorVirtualMachine().run(Paths.get(ClassLoader.getSystemResource("challenge.bin").file.substring(1)))
+    val binaryFilePath = Paths.get(ClassLoader.getSystemResource("challenge.bin").file.substring(1))
+    val vm = SynacorVirtualMachine()
+    if (args.isNotEmpty() && args[0] == "-d") {
+        vm.dumpBinary(binaryFilePath)
+    } else {
+        vm.run(binaryFilePath)
+    }
 }
