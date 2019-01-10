@@ -276,11 +276,13 @@ class OpCodeTest {
     @Test
     fun wmemTest() {
         // wmem: 16 a b -> write the value from <b> into memory at address <a>
-        val targetAddress = 100
-        val targetValue = 200.toUShort()
+        val targetAddressSource = 100
+        val targetAddress = 200
+        val targetValue = 300.toUShort()
         memory.set(0, OpCode.WMEM.code.toInt())
-        memory.set(1, targetAddress)
+        memory.set(1, targetAddressSource)
         memory.set(2, targetValue)
+        memory.set(100, targetAddress)
         val expectedInstructionPointer = instructionPointer + 3
         Assert.assertEquals("WMEM should return $expectedInstructionPointer", expectedInstructionPointer, executeNext())
         Assert.assertEquals("WMEM should have set memory address $targetAddress to $targetValue", targetValue, memory.get(targetAddress))
