@@ -39,10 +39,10 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
     fun execute(memory: SynacorVirtualMachineMemory, instructionPointer: Int): Int {
         when (this) {
             // halt: 0 -> stop execution and terminate the program
-            HALT -> return -1
+            HALT -> return halt()
             // set: 1 a b -> set register <a> to the value of <b>
             SET -> {
-                memory.set(memory.getAddress(instructionPointer + 1).toInt(), memory.get(instructionPointer + 2))
+                memory.set(memory.getAddress(instructionPointer + 1), memory.get(instructionPointer + 2))
             }
             // push: 2 a -> push <a> onto the stack
             PUSH -> {
@@ -53,7 +53,7 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
                 try {
                     memory.set(memory.getAddress(instructionPointer + 1), memory.pop())
                 } catch (e: EmptyStackException) {
-                    return HALT.execute(memory, instructionPointer)
+                    return halt()
                 }
             }
             // eq: 4 a b c -> set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise
@@ -109,7 +109,7 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
             }
             // wmem: 16 a b -> write the value from <b> into memory at address <a>
             WMEM -> {
-                memory.set(memory.getAddress(instructionPointer + 1).toInt(), memory.get(instructionPointer + 2))
+                memory.set(memory.getAddress(instructionPointer + 1), memory.get(instructionPointer + 2))
             }
             // call: 17 a -> write the address of the next instruction to the stack and jump to <a>
             CALL -> {
@@ -118,10 +118,10 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
             }
             // ret: 18 -> remove the top element from the stack and jump to it; empty stack = halt
             RET -> {
-                try {
-                    return memory.pop().toInt()
+                return try {
+                    memory.pop().toInt()
                 } catch (e: EmptyStackException) {
-                    return HALT.execute(memory, instructionPointer)
+                    halt()
                 }
             }
             // out: 19 a -> write the character represented by ascii code <a> to the terminal
@@ -140,9 +140,11 @@ enum class OpCode(val code: Number, private val parametersCount: Int) {
         return instructionPointer + parametersCount + 1
     }
 
+    private fun halt() = -1
+
     companion object {
         private val codeToOp = OpCode.values().map { it.code to it }.toMap()
-        const val Modulo = 32678
+        const val Modulo = 32768
 
         private var currentIndex = 0
         private var currentLine = ""
