@@ -64,13 +64,17 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
             // eq: 4 a b c -> set <a> to 1 if <b> is equal to <c>; set it to 0 otherwise
             EQ -> {
                 val targetAddress = memory.getRaw(instructionPointer + 1)
-                val value = if (memory.get(instructionPointer + 2) == memory.get(instructionPointer + 3)) 1 else 0
+                val b = memory.get(instructionPointer + 2)
+                val c = memory.get(instructionPointer + 3)
+                val value = if (b == c) 1 else 0
                 memory.set(targetAddress, value)
             }
             // gt: 5 a b c -> set <a> to 1 if <b> is greater than <c>; set it to 0 otherwise
             GT -> {
                 val targetAddress = memory.getRaw(instructionPointer + 1)
-                val value = if (memory.get(instructionPointer + 2) > memory.get(instructionPointer + 3)) 1 else 0
+                val b = memory.get(instructionPointer + 2)
+                val c = memory.get(instructionPointer + 3)
+                val value = if (b > c) 1 else 0
                 memory.set(targetAddress, value)
             }
             // jmp: 6 a -> jump to <a>
@@ -175,8 +179,9 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
             }
             // in: 20 a -> read a character from the terminal and write its ascii code to <a>; it can be assumed that once input starts, it will continue until a newline is encountered; this means that you can safely read whole lines from the keyboard and trust that they will be fully read
             IN -> {
-                val value = memory.get(instructionPointer + 1)
-                memory.set(value, nextChar().toShort())
+                val targetAddress = memory.getRaw(instructionPointer + 1)
+                val value = nextChar().toShort()
+                memory.set(targetAddress, value)
             }
             // noop: 21 -> no operation
             NOOP -> {
@@ -197,7 +202,7 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
 
         private fun nextChar(): Char {
             if (currentIndex == currentLine.length) {
-                currentLine = readLine()!!
+                currentLine = readLine()!! + '\n'
                 currentIndex = 0
             }
 

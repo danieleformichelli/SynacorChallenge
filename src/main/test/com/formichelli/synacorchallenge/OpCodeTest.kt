@@ -315,7 +315,7 @@ class OpCodeTest {
     fun inTest() {
         // in: 20 a -> read a character from the terminal and write its ascii code to <a>; it can be assumed that once input starts, it will continue until a newline is encountered; this means that you can safely read whole lines from the keyboard and trust that they will be fully read
         val targetAddress = 100
-        val string = "TEST"
+        val string = "TEST\nTEST"
         System.setIn(string.byteInputStream())
         memory.set(0, OpCode.IN.code.toInt())
         memory.set(1, targetAddress)
