@@ -42,11 +42,11 @@ class OpCodeTest {
         // pop: 3 a -> remove the top element from the stack and write it into <a>; empty stack = error
         val targetAddress = 0
         val pushedValue = 10.toUShort()
-        memory.set(0, OpCode.PUSH.code.toInt())
+        memory.set(0, OpCode.PUSH.code)
         memory.set(1, pushedValue)
-        memory.set(2, OpCode.POP.code.toInt())
+        memory.set(2, OpCode.POP.code)
         memory.set(3, targetAddress)
-        memory.set(4, OpCode.POP.code.toInt())
+        memory.set(4, OpCode.POP.code)
         var expectedInstructionPointer = instructionPointer + 2
         Assert.assertEquals("PUSH should return $expectedInstructionPointer", expectedInstructionPointer, executeNext())
         expectedInstructionPointer = instructionPointer + 2
@@ -117,10 +117,10 @@ class OpCodeTest {
         // jt: 7 a b -> if <a> is nonzero, jump to <b>
         val targetAddress = 100
         memory.set(0, OpCode.JT.code.toInt())
-        memory.set(1, 0)
+        memory.set(1, 0.toInt())
         memory.set(2, targetAddress)
         memory.set(3, OpCode.JT.code.toInt())
-        memory.set(4, 1)
+        memory.set(4, 1.toInt())
         memory.set(5, targetAddress)
         var expectedInstructionPointer = instructionPointer + 3
         Assert.assertEquals("JT should return $expectedInstructionPointer", expectedInstructionPointer, executeNext())
@@ -133,10 +133,10 @@ class OpCodeTest {
         // jf: 8 a b -> if <a> is zero, jump to <b>
         val targetAddress = 100
         memory.set(0, OpCode.JF.code.toInt())
-        memory.set(1, 1)
+        memory.set(1, 1.toInt())
         memory.set(2, targetAddress)
         memory.set(3, OpCode.JF.code.toInt())
-        memory.set(4, 0)
+        memory.set(4, 0.toInt())
         memory.set(5, targetAddress)
         var expectedInstructionPointer = instructionPointer + 3
         Assert.assertEquals("JF should return $expectedInstructionPointer", expectedInstructionPointer, executeNext())
@@ -276,13 +276,11 @@ class OpCodeTest {
     @Test
     fun wmemTest() {
         // wmem: 16 a b -> write the value from <b> into memory at address <a>
-        val targetAddressSource = 100
-        val targetAddress = 200
-        val targetValue = 300.toUShort()
+        val targetAddress = 100
+        val targetValue = 200.toUShort()
         memory.set(0, OpCode.WMEM.code.toInt())
-        memory.set(1, targetAddressSource)
+        memory.set(1, targetAddress)
         memory.set(2, targetValue)
-        memory.set(100, targetAddress)
         val expectedInstructionPointer = instructionPointer + 3
         Assert.assertEquals("WMEM should return $expectedInstructionPointer", expectedInstructionPointer, executeNext())
         Assert.assertEquals("WMEM should have set memory address $targetAddress to $targetValue", targetValue, memory.get(targetAddress))

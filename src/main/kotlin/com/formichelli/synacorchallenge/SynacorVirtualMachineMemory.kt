@@ -18,45 +18,48 @@ class SynacorVirtualMachineMemory {
         memory.put(programBytes)
     }
 
-    fun set(address: Number, value: Number) {
+    fun set(address: Int, value: UShort) {
         memory.putShort(logicalToPhysicalAddress(address), value.toShort())
     }
 
+    fun set(address: Number, value: Number) {
+        set(address.toInt(), value.toInt().toUShort())
+    }
+
     fun set(address: Number, value: UShort) {
-        set(address, value.toShort())
+        set(address.toInt(), value)
     }
 
     fun set(address: Number, value: UInt) {
-        set(address, value.toShort())
+        set(address.toInt(), value.toUShort())
     }
 
     fun set(address: UShort, value: Number) {
-        set(address.toShort(), value)
+        set(address.toInt(), value.toInt().toUShort())
     }
 
     fun set(address: UShort, value: UShort) {
-        set(address.toShort(), value.toShort())
+        set(address.toInt(), value.toUShort())
     }
 
     fun set(address: UShort, value: UInt) {
-        set(address.toShort(), value.toShort())
+        set(address.toInt(), value.toUShort())
     }
 
-    fun getAddress(address: Number) = memory.getShort(logicalToPhysicalAddress(address)).toUShort().toInt()
+    fun getRaw(address: Number) = memory.getShort(logicalToPhysicalAddress(address)).toUShort()
 
     fun get(address: Number): UShort {
-        val valueFromMemory = memory.getShort(logicalToPhysicalAddress(address)).toUShort()
+        val valueFromMemory = getRaw(address)
         return if (valueFromMemory < OpCode.Modulo.toUShort()) {
             // numbers 0..32767 mean a literal value
             valueFromMemory
         } else {
             // numbers 32768..32775 instead mean registers 0..7
-            memory.getShort(logicalToPhysicalAddress(valueFromMemory)).toUShort()
+            getRaw(valueFromMemory.toInt())
         }
     }
 
     private fun logicalToPhysicalAddress(address: Number) = address.toInt() * Short.SIZE_BYTES
-    private fun logicalToPhysicalAddress(address: UShort) = logicalToPhysicalAddress(address.toInt())
 
     fun push(value: Number) {
         stack.push(value.toShort())

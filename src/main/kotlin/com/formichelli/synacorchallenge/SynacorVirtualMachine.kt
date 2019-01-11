@@ -13,9 +13,7 @@ class SynacorVirtualMachine {
         while (instructionPointer != -1) {
             ++instructionsCount
             val opCode = OpCode.fromCode(memory.get(instructionPointer))
-            if (instructionsCount > 695000) {
-                System.err.println("$instructionPointer: ${opCode.toString(memory, instructionPointer)}")
-            }
+            // System.err.println("$instructionPointer: ${opCode.toString(memory, instructionPointer)}")
             instructionPointer = opCode.execute(memory, instructionPointer)
         }
     }
