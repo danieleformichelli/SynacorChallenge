@@ -1,5 +1,6 @@
 package com.formichelli.synacorchallenge
 
+import java.nio.file.Files
 import java.nio.file.Paths
 
 /*
@@ -86,9 +87,15 @@ noop: 21
 fun main(args: Array<String>) {
     val binaryFilePath = Paths.get(ClassLoader.getSystemResource("challenge.bin").file.substring(1))
     val vm = SynacorVirtualMachine()
-    if (args.isNotEmpty() && args[0] == "-d") {
-        vm.dumpBinary(binaryFilePath)
-    } else {
-        vm.run(binaryFilePath)
+    if (args.isNotEmpty()) {
+        when (args[0]) {
+            "-d" -> {
+                vm.dumpBinary(binaryFilePath)
+                return
+            }
+            "-s" -> OpCode.prefill(Files.readAllLines(Paths.get(ClassLoader.getSystemResource("solution.txt").file.substring(1))))
+        }
     }
+
+    vm.run(binaryFilePath)
 }

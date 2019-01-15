@@ -206,11 +206,20 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
                 currentIndex = 0
             }
 
-            return currentLine[currentIndex++]
+            val currentChar = currentLine[currentIndex++]
+            return currentChar
         }
 
         fun fromCode(code: UShort) = fromCode(code.toShort())
         private fun fromCode(code: Number) = codeToOp[code.toInt()]
                 ?: throw IllegalArgumentException("Invalid code $code")
+
+        fun prefill(prefillInput: Collection<String>) {
+            val lineBuilder = StringBuilder()
+            prefillInput.forEach {
+                lineBuilder.append(it).append('\n')
+            }
+            currentLine = lineBuilder.toString()
+        }
     }
 }
