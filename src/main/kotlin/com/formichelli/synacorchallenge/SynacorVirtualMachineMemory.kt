@@ -7,15 +7,19 @@ import java.nio.file.Path
 import java.util.*
 
 @ExperimentalUnsignedTypes
-class SynacorVirtualMachineMemory {
+class SynacorVirtualMachineMemory(binaryFilePath: Path? = null) {
     private val memory = ByteBuffer.allocate((1.shl(15) + 8) * Short.SIZE_BYTES).order(ByteOrder.LITTLE_ENDIAN)
     private val stack = Stack<Short>()
-    var programSize = -1
+    val programSize: Int
 
-    fun loadProgram(binaryFilePath: Path) {
-        val programBytes = Files.readAllBytes(binaryFilePath)
-        programSize = programBytes.size / Short.SIZE_BYTES
-        memory.put(programBytes)
+    init {
+        if (binaryFilePath == null) {
+            programSize = -1
+        } else {
+            val programBytes = Files.readAllBytes(binaryFilePath)
+            programSize = programBytes.size / Short.SIZE_BYTES
+            memory.put(programBytes)
+        }
     }
 
     fun set(address: Int, value: UShort) {

@@ -30,7 +30,12 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
     fun toString(memory: SynacorVirtualMachineMemory, instructionPointer: Int): String {
         val stringBuilder = StringBuilder(this.name)
         for (parameterIndex in 1..parametersCount) {
-            stringBuilder.append(' ').append(memory.getRaw(instructionPointer + parameterIndex))
+            val value = memory.getRaw(instructionPointer + parameterIndex).toInt()
+            if (value >= Modulo) {
+                stringBuilder.append(" r").append(value - Modulo)
+            } else {
+                stringBuilder.append(' ').append(value)
+            }
         }
 
         return stringBuilder.toString()
@@ -182,6 +187,14 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
                 val targetAddress = memory.getRaw(instructionPointer + 1)
                 val value = nextChar().toShort()
                 memory.set(targetAddress, value)
+
+                if (currentLine == "use teleporter\n" && currentLineIndex == 0) {
+                    // teleporter hack
+                    memory.set(5485, 6.toUShort())
+                    memory.set(5489, 15.toUShort())
+                    memory.set(5490, 15.toUShort())
+                    memory.set(Modulo + 7, 25734.toUShort())
+                }
             }
             // noop: 21 -> no operation
             NOOP -> {
@@ -197,17 +210,24 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
         private val codeToOp = OpCode.values().map { it.code to it }.toMap()
         const val Modulo = 32768
 
-        private var currentIndex = 0
+        private var currentLineIndex = -1
         private var currentLine = ""
+        private var prefillInput = mutableListOf<String>()
+        private var prefillInputIndex = 0
 
         private fun nextChar(): Char {
-            if (currentIndex == currentLine.length) {
-                currentLine = readLine()!! + '\n'
-                currentIndex = 0
+            if (++currentLineIndex == currentLine.length) {
+                val nextLine = if (prefillInputIndex < prefillInput.size) {
+                    prefillInput[prefillInputIndex++]
+                } else {
+                    readLine()!!
+                }
+
+                currentLine = nextLine + '\n'
+                currentLineIndex = 0
             }
 
-            val currentChar = currentLine[currentIndex++]
-            return currentChar
+            return currentLine[currentLineIndex]
         }
 
         fun fromCode(code: UShort) = fromCode(code.toShort())
@@ -215,11 +235,7 @@ enum class OpCode(val code: Number, val parametersCount: Int) {
                 ?: throw IllegalArgumentException("Invalid code $code")
 
         fun prefill(prefillInput: Collection<String>) {
-            val lineBuilder = StringBuilder()
-            prefillInput.forEach {
-                lineBuilder.append(it).append('\n')
-            }
-            currentLine = lineBuilder.toString()
+            OpCode.prefillInput.addAll(prefillInput)
         }
     }
 }
