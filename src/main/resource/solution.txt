@@ -51,3 +51,18 @@ use concave coin
 use corroded coin
 north
 take teleporter
+use teleporter
+west
+north
+north
+north
+north
+north
+north
+north
+east
+take journal
+west
+north
+north
+take orb
