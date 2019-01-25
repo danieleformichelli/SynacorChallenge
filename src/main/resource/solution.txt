@@ -66,3 +66,15 @@ west
 north
 north
 take orb
+north
+east
+east
+north
+west
+south
+east
+east
+west
+north
+north
+east
